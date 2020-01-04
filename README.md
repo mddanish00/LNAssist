@@ -13,7 +13,7 @@ Only Python 3.7 supported. Another version may or may not work.
 setup.py install
 ```
 
-## Usage 
+## Usage
 Usage Example
 ```
 from LNAssist import LNAssist
