@@ -52,7 +52,8 @@ class LNAssist:
         self.full_series: str = 'None'  # Current series's full name.
         # Example: The World of Otome Games is Tough For Mobs
         self.vol: int = 0  # Current volume
-        self.tasks_list = []  # List of tasks
+        self.chp_tasks_list = []  # List of chapter tasks
+        self.img_tasks_list = []  # List of img tasks
         self.path: str = 'files'  # Current working path; use only if none series specified
 
     def set_series(self, ser: str, full_ser: str, vl: str):
@@ -83,18 +84,30 @@ class LNAssist:
         epilogue: flag if this chapter is epilogue or not
         image: flag if this task is for image
         """
-        self.tasks_list.append(Task(chapter, url, epilogue, image))
+        if image is False:
+            self.chp_tasks_list.append(Task(chapter, url, epilogue, image))
+        else:
+            self.img_tasks_list.append(Task(chapter, url, epilogue, image))
 
     def run(self):
         """
         Run all the added tasks
         """
-        for x in tqdm(self.tasks_list, "Executing tasks          ", unit="tk"):
-            x: Task
-            if x.image is True:
-                self.extract_img(x.url)  # image task
-            else:
+        if len(self.chp_tasks_list) is 0 and len(self.img_tasks_list) is 0:
+            print("No task available. Please add task first.")
+
+        if len(self.chp_tasks_list) is not 0:
+            for x in tqdm(self.chp_tasks_list, "Executing chapter tasks  ", unit="tk"):
+                x: Task
                 self.extract_chapter(x.chapter, x.url, x.epilogue)  # chapter
+                self.chp_tasks_list.remove(x)
+
+        if len(self.img_tasks_list) is not 0:
+            for x in self.img_tasks_list:
+                x: Task
+                self.extract_img(x.url)  # image task
+                self.img_tasks_list.remove(x)
+
 
     def clear(self):
         """
@@ -126,8 +139,8 @@ class LNAssist:
         soup.html['xmlns:epub'] = 'http://www.idpf.org/2007/ops'
         # The tags that necessary for EPUB xhtml files
 
-        if not os.path.exists(self.path + '/' + 'chapters'):
-            os.mkdir(self.path + '/' + 'chapters')
+        if not os.path.isdir(self.path + '/' + 'chapters'):
+            os.makedirs(self.path + '/' + 'chapters')
 
         file = open(self.path + '/' + 'chapters' + '/' + file_name, 'w',
                     encoding='UTF-8')
@@ -183,7 +196,7 @@ class LNAssist:
                     f.write(chunk)
 
 
-ln = LNAssist()
+ln = LNAssist()  # for use
 
 
 class Task:
