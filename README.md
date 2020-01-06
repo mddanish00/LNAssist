@@ -16,9 +16,8 @@ setup.py install
 ## Usage
 Usage Example
 ```
-from LNAssist import LNAssist
+from LNAssist import ln
 
-ln = LNAssist
 ln.set_series('otomege', 'The World of Otome Games is Tough For Mobs', 4)
 
 ln.extract_img('http://xxxxxxxxx/illustrations', image=True)

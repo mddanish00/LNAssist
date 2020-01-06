@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='LNAssist',
-    version='1.0.0',
+    version='1.0.1',
     packages=find_packages(),
     url='https://github.com/Miracutor/LNAssist',
     long_description=long_description,

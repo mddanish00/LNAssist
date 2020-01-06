@@ -183,7 +183,7 @@ class LNAssist:
                     f.write(chunk)
 
 
-LNAssist = LNAssist()
+ln = LNAssist()
 
 
 class Task:
