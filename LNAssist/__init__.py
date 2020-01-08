@@ -76,7 +76,7 @@ class LNAssist:
             x = x + 1
         print('')
 
-    def add(self, url: str, chapter: int = 0, epilogue: bool = False, image: bool = False):
+    def add(self, url: str, chapter: float = 0, epilogue: bool = False, image: bool = False):
         """
         Add a task into the queue
         url: url of new task
@@ -108,7 +108,6 @@ class LNAssist:
                 self.extract_img(x.url)  # image task
                 self.img_tasks_list.remove(x)
 
-
     def clear(self):
         """
         Clear the current working folder according the current series
@@ -117,14 +116,14 @@ class LNAssist:
             shutil.rmtree(self.path)
             print('Current folder cleared!')
 
-    def extract_chapter(self, chapter: int, url: str, epilogue: bool = False):
+    def extract_chapter(self, chapter: float, url: str, prologue: bool = False, epilogue: bool = False):
         """
         Extract chapter text from the url and repackages into an xhtml for EPUB
         chapter: the current chapter count; chapter 0 is count as prologue
         url: url of new task
         epilogue: flag if this chapter is epilogue or not
         """
-        if chapter == 0:
+        if prologue is True:
             file_name = 'prologue.xhtml'
         elif epilogue is True:
             file_name = 'epilogue.xhtml'
@@ -200,7 +199,7 @@ ln = LNAssist()  # for use
 
 
 class Task:
-    def __init__(self, chapter: int, url: str, epilogue: bool, image: bool):
+    def __init__(self, chapter: float, url: str, epilogue: bool, image: bool):
         self.chapter = chapter
         self.url = url
         self.epilogue = epilogue
