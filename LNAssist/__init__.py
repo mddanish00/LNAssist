@@ -76,7 +76,7 @@ class LNAssist:
             x = x + 1
         print('')
 
-    def add(self, url: str, chapter: float = 0, prolog: bool = False, epilog: bool = False, img: bool = False):
+    def add(self, url: str, chapter: float = 0, prologue: bool = False, epilogue: bool = False, image: bool = False):
         """
         Add a task into the queue
         url: url of new task
@@ -85,10 +85,10 @@ class LNAssist:
         epilogue: flag if this chapter is epilogue or not
         image: flag if this task is for image
         """
-        if img is False:
-            self.chp_tasks_list.append(Task(url, chapter, prologue=prolog, epilogue=epilog))
+        if image is False:
+            self.chp_tasks_list.append(Task(url, chapter, prologue=prologue, epilogue=epilogue))
         else:
-            self.img_tasks_list.append(Task(url, image=img))
+            self.img_tasks_list.append(Task(url, image=image))
 
     def run(self):
         """
@@ -98,16 +98,16 @@ class LNAssist:
             print("No task available. Please add task first.")
 
         if len(self.chp_tasks_list) is not 0:
-            for x in tqdm(self.chp_tasks_list, "Executing chapter tasks  ", unit="tk"):
+            for x in tqdm(self.chp_tasks_list, "Executing chapter tasks  ", unit="tsk"):
                 x: Task
                 self.extract_chapter(x.chapter, x.url, x.prologue, x.epilogue)  # chapter
-                self.chp_tasks_list.remove(x)
+            self.chp_tasks_list.clear()
 
         if len(self.img_tasks_list) is not 0:
             for x in self.img_tasks_list:
                 x: Task
                 self.extract_img(x.url)  # image task
-                self.img_tasks_list.remove(x)
+            self.img_tasks_list.clear()
 
     def clear(self):
         """

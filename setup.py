@@ -8,7 +8,7 @@ with open("LICENSE", "r") as fl:
 
 setup(
     name='LNAssist',
-    version='1.0.5',
+    version='1.0.6',
     packages=find_packages(),
     url='https://github.com/Miracutor/LNAssist',
     license=licen,
