@@ -76,18 +76,19 @@ class LNAssist:
             x = x + 1
         print('')
 
-    def add(self, url: str, chapter: float = 0, epilogue: bool = False, image: bool = False):
+    def add(self, url: str, chapter: float = 0, prolog: bool = False, epilog: bool = False, img: bool = False):
         """
         Add a task into the queue
         url: url of new task
-        chapter: the current chapter count; chapter 0 is count as prologue
+        chapter: the current chapter count
+        prologue: flag if this chapter is prologue or not
         epilogue: flag if this chapter is epilogue or not
         image: flag if this task is for image
         """
-        if image is False:
-            self.chp_tasks_list.append(Task(chapter, url, epilogue, image))
+        if img is False:
+            self.chp_tasks_list.append(Task(url, chapter, prologue=prolog, epilogue=epilog))
         else:
-            self.img_tasks_list.append(Task(chapter, url, epilogue, image))
+            self.img_tasks_list.append(Task(url, image=img))
 
     def run(self):
         """
@@ -99,7 +100,7 @@ class LNAssist:
         if len(self.chp_tasks_list) is not 0:
             for x in tqdm(self.chp_tasks_list, "Executing chapter tasks  ", unit="tk"):
                 x: Task
-                self.extract_chapter(x.chapter, x.url, x.epilogue)  # chapter
+                self.extract_chapter(x.chapter, x.url, x.prologue, x.epilogue)  # chapter
                 self.chp_tasks_list.remove(x)
 
         if len(self.img_tasks_list) is not 0:
@@ -141,8 +142,7 @@ class LNAssist:
         if not os.path.isdir(self.path + '/' + 'chapters'):
             os.makedirs(self.path + '/' + 'chapters')
 
-        file = open(self.path + '/' + 'chapters' + '/' + file_name, 'w',
-                    encoding='UTF-8')
+        file = open(self.path + '/' + 'chapters' + '/' + file_name, 'w', encoding='UTF-8')
         file.write(soup.prettify())
         file.close()
 
@@ -199,8 +199,10 @@ ln = LNAssist()  # for use
 
 
 class Task:
-    def __init__(self, chapter: float, url: str, epilogue: bool, image: bool):
+    def __init__(self, url: str, chapter: float = 0, prologue: bool = False, epilogue: bool = False,
+                 image: bool = False):
         self.chapter = chapter
         self.url = url
+        self.prologue = prologue
         self.epilogue = epilogue
         self.image = image
