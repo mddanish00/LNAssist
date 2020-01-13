@@ -14,14 +14,14 @@ Installation instructions is on Releases.
 ## Usage
 Usage Example
 ```
-from LNAssist import ln
+from lnassist import ln
 
 ln.set_series('otomege', 'The World of Otome Games is Tough For Mobs', 4)
 
 ln.extract_img('http://xxxxxxxxx/illustrations', image=True)
-ln.extract_chapter(4, 'http://xxxxxxxxx/v4prologue', prologue=True)
-ln.extract_chapter(4, 'http://xxxxxxxxx/v4epilogue', epilogue=True)
-ln.extract_chapter(4, 'http://xxxxxxxxx/v4c2')
+ln.extract_chapter('http://xxxxxxxxx/v4prologue', 4, prologue=True)
+ln.extract_chapter('http://xxxxxxxxx/v4epilogue', 5, epilogue=True)
+ln.extract_chapter('http://xxxxxxxxx/v4c2', 2)
 
 ln.add('http://xxxxxxxxx/v4c2',2)
 ln.add('http://xxxxxxxxx/v4illustrations',image=True)
@@ -47,13 +47,11 @@ Change path: files/short name/vol/
 
 #### Chapter
 ```
-ln.extract_chapter(chapter, url, *prologue, *epilogue)
+ln.extract_chapter(url, chapter, *prologue, *epilogue, *afterword, *extra, *sidestory, *interlude)
 ```
-Fill in chapter and the url. 
+Extract chapter text from the url and repackages into an xhtml for EPUB.
 
-The optional value is epilogue, True only if the current chapter is epilogue.
-
-Another optional value is prologue, True only if the current chapter is prologue.  
+Available flags: prologue, epilogue, afterword, extra, sidestory, interlude
 
 Default value is False.
 
@@ -63,7 +61,7 @@ The generated XHTML will be in: current_path/chapters/
 ```
 ln.extract_img(url)
 ```
-Fill the url of the illustration page.
+Fetch image links from the given url and download the links.
 
 The downloaded illustrations will be in: current_path/illustrations/
 
@@ -71,31 +69,36 @@ The downloaded illustrations will be in: current_path/illustrations/
 
 #### Add task
 ```
-ln.add(url, *chapter, *prologue, *epilogue, *image)
+ln.add(url, *chapter, *prologue, *epilogue, *afterword, *extra, *sidestory, *interlude, *image)
 ```
-Fill in the url of the page that you want to be scrapped or download.
-The optional value is chapter, epilogue and image. 
+Add a task into the queue.
 
-Set chapter value if the url is for chapter.
+Set illustrations to True if only the current task is intended for illustrations.
 
-Set prologue to True if the current task is prologue chapter.
+Available flags: prologue, epilogue, afterword, extra, sidestory, interlude
 
-Set epilogue to True if the current task is epilogue chapter.
-
-Set image to True if the current task is for illustrations.
+Only one of the flags can active in one time.
 
 #### Run all tasks
 ```
 ln.run()
 ```
-The function will run all the tasks added.
+Run all the added tasks.
+
+## Advanced
 
 ### Clear all files
 ```
 ln.clear()
 ```
-This function will clear all files in the current path.
+Clear the current path according the current series.
 
 Default path: files/
 
 Change path: files/short name/vol/
+
+### Create new instance of ln object
+```
+ar = ln.create()
+```
+Create a new instance of ln object.
