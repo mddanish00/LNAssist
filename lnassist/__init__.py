@@ -33,6 +33,9 @@ def is_absolute(url):
 
 
 def request_url(url):
+    """
+    Request url.
+    """
     try:
         response = requests.get(url)
     except requests.exceptions.RequestException as e:
@@ -44,6 +47,24 @@ def request_url(url):
         return exit(2)  # No internet connection exit code
 
     return response
+
+
+def if_only_true(*args):
+    """
+    Check if only one flags is True.
+    """
+    found = False
+    already_found = False
+    for it in args:
+        if it is True:
+            found = True
+            if already_found is True:
+                found = False
+                break
+            else:
+                already_found = True
+
+    return found
 
 
 class LNAssist:
@@ -62,19 +83,20 @@ class LNAssist:
         """
         return LNAssist()
 
-    def set_series(self, ser: str, full_ser: str, vl: str):
+    def set_series(self, short_name: str, full_name: str, volume: str):
         """
-        Set the current series and the volume
-        ser: short name of the series
-        full_ser: full name of the series
-        vl: the current vol count
+        Set the current series and the current volume numbering.
+
+        Arguments:
+        ser -- short name of the series
+        full_ser -- full name of the series
+        vl -- the current vol count
         """
-        # global series, full_series, vol
-        self.full_series = full_ser
-        self.series = ser.lower()  # convert to lower case
-        self.vol = vl
+        self.full_series = full_name
+        self.series = short_name.lower()  # convert to lower case
+        self.vol = volume
         self.path = 'files' + '/' + self.series + '/' + 'vol' + str(self.vol)
-        text = str(full_ser) + ' Volume ' + str(vl)
+        text = str(full_name) + ' Volume ' + str(volume)
         print(text)
         x = 0
         while x < len(text):
@@ -82,23 +104,38 @@ class LNAssist:
             x = x + 1
         print('')
 
-    def add(self, url: str, chapter: float = 0, prologue: bool = False, epilogue: bool = False, image: bool = False):
+    def add(self, url: str, chapter: float = 0, prologue: bool = False, epilogue: bool = False, afterword: bool = False,
+            illustrations: bool = False, extra: bool = False, sidestory: bool = False, interlude: bool = False):
         """
-        Add a task into the queue
-        url: url of new task
-        chapter: the current chapter count
-        prologue: flag if this chapter is prologue or not
-        epilogue: flag if this chapter is epilogue or not
-        image: flag if this task is for image
+        Add a task into the queue.
+
+        Arguments:
+        url -- Current task url
+        chapter -- Current task chapter count. Optional.
+
+        Flags:
+        prologue -- if current task chapter is prologue
+        epilogue -- if current task chapter is epilogue
+        afterword -- if current task chapter is afterword
+        extra -- if current task chapter is extra
+        sidestory -- if current task chapter is side story
+        interlude -- if current task chapter is interlude
+        illustrations -- if current task is for illustrations
         """
-        if image is False:
-            self.chp_tasks_list.append(Task(url, chapter, prologue=prologue, epilogue=epilogue))
+        if illustrations is False:
+            if prologue or epilogue or afterword or extra or sidestory or interlude:
+                if if_only_true(prologue, epilogue, afterword, extra, sidestory, interlude) is False:
+                    print('Only one of these flags (prologue, epilogue, afterword, extra, sidestory, interlude) can be '
+                          'enabled at one time.')
+                    return
+            self.chp_tasks_list.append(Task(url, chapter, prologue=prologue, epilogue=epilogue, afterword=afterword,
+                                            extra=extra, sidestory=sidestory, interlude=interlude))
         else:
-            self.img_tasks_list.append(Task(url, image=image))
+            self.img_tasks_list.append(Task(url, illustrations=illustrations))
 
     def run(self):
         """
-        Run all the added tasks
+        Run all the added tasks.
         """
         if len(self.chp_tasks_list) is 0 and len(self.img_tasks_list) is 0:
             print("No task available. Please add task first.")
@@ -106,7 +143,8 @@ class LNAssist:
         if len(self.chp_tasks_list) is not 0:
             for x in tqdm(self.chp_tasks_list, "Executing chapter tasks  ", unit="tsk"):
                 x: Task
-                self.extract_chapter(x.chapter, x.url, x.prologue, x.epilogue)  # chapter
+                self.extract_chapter(x.url, x.chapter, x.prologue, x.epilogue, x.afterword, x.extra, x.sidestory,
+                                     x.interlude)  # chapter
             self.chp_tasks_list.clear()
 
         if len(self.img_tasks_list) is not 0:
@@ -117,23 +155,53 @@ class LNAssist:
 
     def clear(self):
         """
-        Clear the current working folder according the current series
+        Clear the current path according the current series.
         """
         if os.path.exists(self.path):
             shutil.rmtree(self.path)
             print('Current folder cleared!')
 
-    def extract_chapter(self, chapter: float, url: str, prologue: bool = False, epilogue: bool = False):
+    def extract_chapter(self, url: str, chapter: float = 0, prologue: bool = False, epilogue: bool = False,
+                        afterword: bool = False, extra: bool = False, sidestory: bool = False, interlude: bool = False):
         """
-        Extract chapter text from the url and repackages into an xhtml for EPUB
-        chapter: the current chapter count; chapter 0 is count as prologue
-        url: url of new task
-        epilogue: flag if this chapter is epilogue or not
+        Extract chapter text from the url and repackages into an xhtml for EPUB.
+
+        Arguments:
+        url -- Current url
+        chapter -- Current chapter count. Optional.
+
+        Flags:
+        prologue -- if current chapter is prologue
+        epilogue -- if current chapter is epilogue
+        afterword -- if current chapter is afterword
+        extra -- if current chapter is extra
+        sidestory -- if current chapter is side story
+        interlude -- if current chapter is interlude
         """
+        if prologue or epilogue or afterword or extra or sidestory or interlude:
+            if if_only_true(prologue, epilogue, afterword, extra, sidestory, interlude) is False:
+                print('Only one of these flags (prologue, epilogue, afterword, extra, sidestory, interlude) can be '
+                      'enabled at one time.')
+                return
+
         if prologue is True:
             file_name = 'prologue.xhtml'
         elif epilogue is True:
             file_name = 'epilogue.xhtml'
+        elif afterword is True:
+            file_name = 'afterword.xhtml'
+        elif extra is True and chapter is 0:
+            file_name = 'extra.xhtml'
+        elif extra is True:
+            file_name = 'extra' + str(chapter) + '.xhtml'
+        elif sidestory is True and chapter is 0:
+            file_name = 'ss.xhtml'
+        elif sidestory is True:
+            file_name = 'ss' + str(chapter) + '.xhtml'
+        elif interlude is True and chapter is 0:
+            file_name = 'interlude.xhtml'
+        elif interlude is True:
+            file_name = 'interlude' + str(chapter) + '.xhtml'
         else:
             file_name = 'chp' + str(chapter) + '.xhtml'
 
@@ -154,8 +222,10 @@ class LNAssist:
 
     def extract_img(self, url):
         """
-        Process image task. Fetch links from the given url and download the image
-        url: url of current image task
+        Fetch image links from the given url and download the links.
+
+        Arguments:
+        url -- Current url
         """
         response = request_url(url)
 
@@ -186,8 +256,10 @@ class LNAssist:
 
     def download_img(self, url):
         """
-        Downloads a file given an URL and puts it in the folder `pathname`
-        url: url of current image task
+        Downloads a image given an URL and puts it in the current path.
+
+        Arguments:
+        url -- Current url
         """
         pathname = self.path + '/' + "illustrations"
         buffer_size = 1024
@@ -206,9 +278,14 @@ ln = LNAssist()  # for use
 
 class Task:
     def __init__(self, url: str, chapter: float = 0, prologue: bool = False, epilogue: bool = False,
-                 image: bool = False):
+                 afterword: bool = False, illustrations: bool = False, extra: bool = False, sidestory: bool = False,
+                 interlude: bool = False):
         self.chapter = chapter
         self.url = url
         self.prologue = prologue
         self.epilogue = epilogue
-        self.image = image
+        self.afterword = afterword
+        self.extra = extra
+        self.sidestory = sidestory
+        self.interlude = interlude
+        self.illustrations = illustrations
