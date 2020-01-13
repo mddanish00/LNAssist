@@ -1,17 +1,13 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-with open("LICENSE", "r") as fl:
-    licen = fl.read()
-
 setup(
-    name='LNAssist',
-    version='1.0.6',
-    packages=find_packages(),
+    name='lnassist',
+    version='1.0.7',
+    packages=['lnassist'],
     url='https://github.com/Miracutor/LNAssist',
-    license=licen,
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='Miracutor',

@@ -56,6 +56,12 @@ class LNAssist:
         self.img_tasks_list = []  # List of img tasks
         self.path: str = 'files'  # Current working path; use only if none series specified
 
+    def create(self):
+        """
+        Create a new instance of ln object.
+        """
+        return LNAssist()
+
     def set_series(self, ser: str, full_ser: str, vl: str):
         """
         Set the current series and the volume
