@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from readability import Document
 from tqdm import tqdm
+from lnassist.epub import Epub
 
 
 def is_valid(url):
@@ -42,7 +43,7 @@ def request_url(url):
         print('For some reason, the content cannot be fetched from Internet.')
         print('- Check your internet connection.')
         print('- Check if your url provided is valid.')
-        print('Error: ' + e)
+        print('Error: ' + str(e))
         return exit(2)  # No internet connection exit code
 
     return response
@@ -82,8 +83,9 @@ class LNAssist:
         self.chp_tasks_list = []  # List of chapter tasks
         self.img_tasks_list = []  # List of img tasks
         self.path: Path = Path('files')  # Current working path; use only if none series specified
+        self.epub = None
 
-    def set_series(self, short_name: str, full_name: str, volume: str):
+    def set_series(self, short_name: str, full_name: str, volume: int):
         """
         Set the current series and the current volume numbering.
 
@@ -155,14 +157,14 @@ class LNAssist:
                 self.extract_img(x.url)  # image task
             self.img_tasks_list.clear()
 
-    def clear(self, all: bool = False):
+    def clear(self, entire: bool = False):
         """
         Clear the current path according the current series.
 
         Optional:
-        all -- True if you want to delete entire files directory instead of current path. Default is False.
+        entire -- True if you want to delete entire files directory instead of current path. Default is False.
         """
-        if all is True:
+        if entire is True:
             current = Path('files')
         else:
             current = self.path
