@@ -1,5 +1,5 @@
-import os
 import shutil
+from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
@@ -42,8 +42,7 @@ def request_url(url):
         print('For some reason, the content cannot be fetched from Internet.')
         print('- Check your internet connection.')
         print('- Check if your url provided is valid.')
-        print('Error: ', end='')
-        print(e)
+        print('Error: ' + e)
         return exit(2)  # No internet connection exit code
 
     return response
@@ -67,6 +66,13 @@ def if_only_true(*args):
     return found
 
 
+def create():
+    """
+    Create a new instance of ln object.
+    """
+    return LNAssist()
+
+
 class LNAssist:
     def __init__(self):
         self.series: str = 'None'  # Current series's short name. Example: Otomege
@@ -75,13 +81,7 @@ class LNAssist:
         self.vol: int = 0  # Current volume
         self.chp_tasks_list = []  # List of chapter tasks
         self.img_tasks_list = []  # List of img tasks
-        self.path: str = 'files'  # Current working path; use only if none series specified
-
-    def create(self):
-        """
-        Create a new instance of ln object.
-        """
-        return LNAssist()
+        self.path: Path = Path('files')  # Current working path; use only if none series specified
 
     def set_series(self, short_name: str, full_name: str, volume: str):
         """
@@ -92,10 +92,12 @@ class LNAssist:
         full_ser -- full name of the series
         vl -- the current vol count
         """
-        self.full_series = full_name
-        self.series = short_name.lower()  # convert to lower case
-        self.vol = volume
-        self.path = 'files' + '/' + self.series + '/' + 'vol' + str(self.vol)
+        self.full_series: str = full_name
+        self.series: str = short_name.lower()  # convert to lower case
+        self.vol: int = volume
+        self.path: Path = self.path / self.series / 'vol' / str(self.vol)
+        # self.path: Path = Path('files' + '/' + self.series + '/' + 'vol' + str(self.vol))
+        # self.path = 'files' + '/' + self.series + '/' + 'vol' + str(self.vol)
         text = str(full_name) + ' Volume ' + str(volume)
         print(text)
         x = 0
@@ -153,13 +155,23 @@ class LNAssist:
                 self.extract_img(x.url)  # image task
             self.img_tasks_list.clear()
 
-    def clear(self):
+    def clear(self, all: bool = False):
         """
         Clear the current path according the current series.
+
+        Optional:
+        all -- True if you want to delete entire files directory instead of current path. Default is False.
         """
-        if os.path.exists(self.path):
-            shutil.rmtree(self.path)
+        if all is True:
+            current = Path('files')
+        else:
+            current = self.path
+
+        if current.is_dir():
+            shutil.rmtree(current)
             print('Current folder cleared!')
+        else:
+            print('Current path not exist or already cleared!')
 
     def extract_chapter(self, url: str, chapter: float = 0, prologue: bool = False, epilogue: bool = False,
                         afterword: bool = False, extra: bool = False, sidestory: bool = False, interlude: bool = False):
@@ -213,12 +225,15 @@ class LNAssist:
         soup.html['xmlns:epub'] = 'http://www.idpf.org/2007/ops'
         # The tags that necessary for EPUB xhtml files
 
-        if not os.path.isdir(self.path + '/' + 'chapters'):
-            os.makedirs(self.path + '/' + 'chapters')
+        chapter_path = self.path / 'chapters'
+        if not chapter_path.is_dir():
+            chapter_path.mkdir(parents=True)
 
-        file = open(self.path + '/' + 'chapters' + '/' + file_name, 'w', encoding='UTF-8')
-        file.write(soup.prettify())
-        file.close()
+        chapter_path = chapter_path / file_name
+        chapter_path.write_text(soup.prettify(), encoding='UTF-8')
+        # file = open(chapter_path, 'w', encoding='UTF-8')
+        # file.write(soup.prettify())
+        # file.close()
 
     def extract_img(self, url):
         """
@@ -261,16 +276,20 @@ class LNAssist:
         Arguments:
         url -- Current url
         """
-        pathname = self.path + '/' + "illustrations"
+        pathname = self.path / "illustrations"
         buffer_size = 1024
-        if not os.path.isdir(pathname):
-            os.makedirs(pathname)
+        if not pathname.is_dir():
+            pathname.mkdir(parents=True)
+
         response = requests.get(url, stream=True)
-        filename = os.path.join(pathname, url.split("/")[-1])
-        with open(filename, "wb") as f:
+        filename = pathname / url.split("/")[-1]
+        # filename = os.path.join(pathname, url.split("/")[-1])
+        with filename.open("wb") as f:
             for chunk in response.iter_content(buffer_size):
                 if chunk:
                     f.write(chunk)
+
+            f.close()
 
 
 ln = LNAssist()  # for use
