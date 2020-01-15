@@ -43,7 +43,7 @@ def request_url(url):
         print('- Check your internet connection.')
         print('- Check if your url provided is valid.')
         print('Error: ' + str(e))
-        return exit(2)  # No internet connection exit code
+        return
 
     return response
 
@@ -64,6 +64,19 @@ def if_only_true(*args):
                 already_found = True
 
     return found
+
+
+def print_title(text):
+    print(text)
+    x = 0
+    while x < len(text):
+        print('-', end='')
+        x = x + 1
+    print('')
+
+
+def print_row(num: int, text: str):
+    print('[' + str(num) + '] [' + text + ']')
 
 
 class LNAssist:
@@ -89,16 +102,9 @@ class LNAssist:
         self.full_series: str = full_name
         self.series: str = short_name.lower()  # convert to lower case
         self.vol: int = volume
-        self.path: Path = self.path / self.series / 'vol' / str(self.vol)
-        # self.path: Path = Path('files' + '/' + self.series + '/' + 'vol' + str(self.vol))
-        # self.path = 'files' + '/' + self.series + '/' + 'vol' + str(self.vol)
+        self.path: Path = self.path / self.series / ('vol' + str(self.vol))
         text = str(full_name) + ' Volume ' + str(volume)
-        print(text)
-        x = 0
-        while x < len(text):
-            print('-', end='')
-            x = x + 1
-        print('')
+        print_title(text)
 
     def add(self, url: str, chapter: float = 0, prologue: bool = False, epilogue: bool = False, afterword: bool = False,
             illustrations: bool = False, extra: bool = False, sidestory: bool = False, interlude: bool = False):
@@ -135,6 +141,7 @@ class LNAssist:
         """
         if len(self.chp_tasks_list) is 0 and len(self.img_tasks_list) is 0:
             print("No task available. Please add task first.")
+            return
 
         if len(self.chp_tasks_list) is not 0:
             for x in tqdm(self.chp_tasks_list, "Executing chapter tasks  ", unit="tsk"):
@@ -148,6 +155,31 @@ class LNAssist:
                 x: Task
                 self.extract_img(x.url)  # image task
             self.img_tasks_list.clear()
+
+    def list(self):
+        if len(self.chp_tasks_list) is 0 and len(self.img_tasks_list) is 0:
+            print("No task available. Please add task first.")
+            return
+
+        print('Series: ' + self.full_series)
+        print('Volume: ' + str(self.vol))
+
+        if len(self.chp_tasks_list) is not 0:
+            print_title('Chapter Task List')
+            i: int = 1
+            for x in self.chp_tasks_list:
+                x: Task
+                print_row(i, 'chp (' + str(x.chapter) + ')')
+                i += 1
+            print('')
+
+        if len(self.img_tasks_list) is not 0:
+            print_title('Illustrations Task List')
+            i: int = 1
+            for x in self.img_tasks_list:
+                x: Task
+                print_row(i, 'illustrations (' + str(x.url) + ')')
+                i += 1
 
     def clear(self, entire: bool = False):
         """
@@ -212,6 +244,8 @@ class LNAssist:
             file_name = 'chp' + str(chapter) + '.xhtml'
 
         response = request_url(url)
+        if response is None:
+            return
 
         doc = Document(response.text)
         soup = BeautifulSoup(doc.summary(), "xml")
@@ -237,6 +271,8 @@ class LNAssist:
         url -- Current url
         """
         response = request_url(url)
+        if response is None:
+            return
 
         soup = BeautifulSoup(response.content, "lxml")
         urls = []
