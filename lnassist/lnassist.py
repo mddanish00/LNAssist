@@ -163,13 +163,28 @@ class LNAssist:
 
         print('Series: ' + self.full_series)
         print('Volume: ' + str(self.vol))
+        print('')
 
         if len(self.chp_tasks_list) is not 0:
             print_title('Chapter Task List')
             i: int = 1
             for x in self.chp_tasks_list:
                 x: Task
-                print_row(i, 'chp (' + str(x.chapter) + ')')
+                if x.check_any() is True:
+                    if x.extra:
+                        print_row(i, 'extra (' + str(x.chapter) + ')')
+                    elif x.sidestory:
+                        print_row(i, 'ss (' + str(x.chapter) + ')')
+                    elif x.interlude:
+                        print_row(i, 'interlude (' + str(x.chapter) + ')')
+                    elif x.prologue:
+                        print_row(i, 'prologue')
+                    elif x.epilogue:
+                        print_row(i, 'epilogue')
+                    elif x.afterword:
+                        print_row(i, 'afterword')
+                else:
+                    print_row(i, 'chp (' + str(x.chapter) + ')')
                 i += 1
             print('')
 
@@ -335,3 +350,9 @@ class Task:
         self.sidestory = sidestory
         self.interlude = interlude
         self.illustrations = illustrations
+
+    def check_any(self):
+        if self.interlude or self.sidestory or self.extra or self.afterword or self.prologue or self.epilogue is True:
+            return True
+        else:
+            return False

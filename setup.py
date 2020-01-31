@@ -5,14 +5,16 @@ with open("README.md", "r") as fh:
 
 setup(
     name='lnassist',
-    version='1.0.75',
+    version='1.0.76',
     packages=['lnassist'],
     url='https://github.com/Miracutor/LNAssist',
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='Miracutor',
     author_email='miracleexecutors@gmail.com',
-    description='', install_requires=['requests', 'beautifulsoup4', 'readability-lxml', 'lxml', 'tqdm'],
+    description='A Python module that used to scrap fan translations website for text and illustrations for fan EPUB '
+                'creating purposes.',
+    install_requires=['requests', 'beautifulsoup4', 'readability-lxml', 'lxml', 'tqdm'],
     classifiers=[
         "Programming Language :: Python :: 3.7",
         "Development Status :: 5 - Production/Stable",
