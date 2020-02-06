@@ -8,16 +8,14 @@ from tqdm import tqdm
 
 
 def is_valid(url):
-    """
-    Check if the url is valid
+    """Check if the url is valid
     """
     parsed = requests.utils.urlparse(url)
     return bool(parsed.netloc) and bool(parsed.scheme)
 
 
 def is_image(url):
-    """
-    Check if the image url is in known file format
+    """Check if the image url is in known file format
     """
     if url.find(".png") == url.find(".jpg") == url.find(".gif") == url.find(".jpeg"):
         return False
@@ -26,15 +24,13 @@ def is_image(url):
 
 
 def is_absolute(url):
-    """
-    Check if the url is absolute path
+    """Check if the url is absolute path
     """
     return bool(requests.utils.urlparse(url).netloc)
 
 
 def request_url(url):
-    """
-    Request url.
+    """Request url.
     """
     try:
         response = requests.get(url)
@@ -49,8 +45,7 @@ def request_url(url):
 
 
 def if_only_true(*args):
-    """
-    Check if only one flags is True.
+    """Check if only one flags is True.
     """
     found = False
     already_found = False
@@ -82,7 +77,6 @@ def print_row(num: int, text: str):
 class LNAssist:
     def __init__(self):
         self.series: str = 'None'  # Current series's short name. Example: Otomege
-        self.full_series: str = 'None'  # Current series's full name.
         # Example: The World of Otome Games is Tough For Mobs
         self.vol: int = 0  # Current volume
         self.chp_tasks_list = []  # List of chapter tasks
@@ -90,26 +84,23 @@ class LNAssist:
         self.path: Path = Path('files')  # Current working path; use only if none series specified
         self.epub = None
 
-    def set_series(self, short_name: str, full_name: str, volume: int):
-        """
-        Set the current series and the current volume numbering.
+    def set_series(self, short_name: str, volume: int):
+        """Set the current series and the current volume numbering.
 
         Arguments:
         ser -- short name of the series
         full_ser -- full name of the series
         vl -- the current vol count
         """
-        self.full_series: str = full_name
         self.series: str = short_name.lower()  # convert to lower case
         self.vol: int = volume
         self.path: Path = self.path / self.series / ('vol' + str(self.vol))
-        text = str(full_name) + ' Volume ' + str(volume)
+        text = str(self.series) + ' Volume ' + str(volume)
         print_title(text)
 
     def add(self, url: str, chapter: float = 0, prologue: bool = False, epilogue: bool = False, afterword: bool = False,
             illustrations: bool = False, extra: bool = False, sidestory: bool = False, interlude: bool = False):
-        """
-        Add a task into the queue.
+        """Add a task into the queue.
 
         Arguments:
         url -- Current task url
@@ -136,8 +127,7 @@ class LNAssist:
             self.img_tasks_list.append(Task(url, illustrations=illustrations))
 
     def run(self):
-        """
-        Run all the added tasks.
+        """Run all the added tasks.
         """
         if len(self.chp_tasks_list) is 0 and len(self.img_tasks_list) is 0:
             print("No task available. Please add task first.")
@@ -161,7 +151,7 @@ class LNAssist:
             print("No task available. Please add task first.")
             return
 
-        print('Series: ' + self.full_series)
+        print('Series: ' + self.series)
         print('Volume: ' + str(self.vol))
         print('')
 
@@ -197,8 +187,7 @@ class LNAssist:
                 i += 1
 
     def clear(self, entire: bool = False):
-        """
-        Clear the current path according the current series.
+        """Clear the current path according the current series.
 
         Optional:
         entire -- True if you want to delete entire files directory instead of current path. Default is False.
@@ -216,8 +205,7 @@ class LNAssist:
 
     def extract_chapter(self, url: str, chapter: float = 0, prologue: bool = False, epilogue: bool = False,
                         afterword: bool = False, extra: bool = False, sidestory: bool = False, interlude: bool = False):
-        """
-        Extract chapter text from the url and repackages into an xhtml for EPUB.
+        """Extract chapter text from the url and repackages into an xhtml for EPUB.
 
         Arguments:
         url -- Current url
@@ -279,8 +267,7 @@ class LNAssist:
         # file.close()
 
     def extract_img(self, url):
-        """
-        Fetch image links from the given url and download the links.
+        """Fetch image links from the given url and download the links.
 
         Arguments:
         url -- Current url
@@ -315,8 +302,7 @@ class LNAssist:
             self.download_img(img)
 
     def download_img(self, url):
-        """
-        Downloads a image given an URL and puts it in the current path.
+        """Downloads a image given an URL and puts it in the current path.
 
         Arguments:
         url -- Current url

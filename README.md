@@ -13,6 +13,8 @@ Installation instructions is on Releases.
 
 ## Usage
 Usage Example
+
+*Only can be applied for the latest release, not the current development version.
 ```
 from lnassist import ln
 
