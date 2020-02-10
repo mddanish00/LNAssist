@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from readability import Document
 from tqdm import tqdm
+from lnassist.epub import Epub
 
 
 def is_valid(url):
@@ -97,6 +98,13 @@ class LNAssist:
         self.path: Path = self.path / self.series / ('vol' + str(self.vol))
         text = str(self.series) + ' Volume ' + str(volume)
         print_title(text)
+
+    def output_epub(self):
+        """"Export into an EPUB file.
+        """
+        self.epub = Epub(self.series + str(self.vol), self.path)
+        self.epub.addall()
+        self.epub.output()
 
     def add(self, url: str, chapter: float = 0, prologue: bool = False, epilogue: bool = False, afterword: bool = False,
             illustrations: bool = False, extra: bool = False, sidestory: bool = False, interlude: bool = False):
@@ -314,7 +322,6 @@ class LNAssist:
 
         response = requests.get(url, stream=True)
         filename = pathname / url.split("/")[-1]
-        # filename = os.path.join(pathname, url.split("/")[-1])
         with filename.open("wb") as f:
             for chunk in response.iter_content(buffer_size):
                 if chunk:
