@@ -4,6 +4,7 @@ LNAssist is a Python module that  used to scrap fan translations website for tex
 - Fetch text only and compile it into EPUB-friendly format web page, XHTML.
 - Fetch high-quality illustrations from illustration page.
 - Possible to run the above tasks in batch.
+- Complie chapters and illustration into an EPUB file.
 - Fetch links from table of content and insert into a batch for running the above tasks. (Not yet implemented)
 
 ## Installation
@@ -18,7 +19,7 @@ Usage Example
 ```
 from lnassist import ln
 
-ln.set_series('otomege', 'The World of Otome Games is Tough For Mobs', 4)
+ln.set_series('otomege', 4)
 
 ln.extract_img('http://xxxxxxxxx/illustrations', image=True)
 ln.extract_chapter('http://xxxxxxxxx/v4prologue', 4, prologue=True)
@@ -33,9 +34,9 @@ ln.run()
 
 ### Set Series and Volume
 ```
-ln.set_series(short name, full name, vol)
+ln.set_series(series, vol)
 ```
-Fill in the short name, full name and the volume in the function. 
+Fill in the series name and the volume in the function. 
 
 This function is used to assign the file created 
 and download after this in the appropriate folder. You have to run this function every time the current series that 
@@ -43,7 +44,7 @@ you work changed.
 
 Default path: files/
 
-Change path: files/short name/vol/
+Change path: files/series/vol/
 
 ### Working with only one task
 
@@ -86,6 +87,21 @@ Only one of the flags can active in one time.
 ln.run()
 ```
 Run all the added tasks.
+
+#### List all tasks
+```
+ln.list()
+```
+List all the added tasks.
+
+#### Export into an EPUB file
+```
+ln.output_epub()
+```
+Export all chapters and illustrations in current path into an EPUB file. 
+
+Beware that the generated EPUB is intended to simplify development of proper EPUB with EPUB editing software like Sigil.
+It is not recommended to use it for reading.
 
 ## Advanced
 

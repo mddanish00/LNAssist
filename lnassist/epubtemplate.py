@@ -2,6 +2,8 @@ from bs4 import BeautifulSoup
 
 
 def content_opf(full_title='[Main title here]'):
+    """""content.opf default template
+    """
     soup = BeautifulSoup(features='xml')
 
     package = soup.new_tag('package')
@@ -44,6 +46,8 @@ def content_opf(full_title='[Main title here]'):
 
 
 def container_xml():
+    """""container.xml default template
+    """
     soup = BeautifulSoup(features='xml')
     container = soup.new_tag('container', version='1.0', xmlns='urn:oasis:names:tc:opendocument:xmlns:container')
     rootfiles = soup.new_tag('rootfiles')
@@ -57,7 +61,9 @@ def container_xml():
     return soup
 
 
-def nav_html():
+def nav_xhtml():
+    """""nav.xhtml default template
+    """
     nav = '<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" ' \
           'xmlns:epub="http://www.idpf.org/2007/ops" lang="en" xml:lang="en"><head><title></title>' \
           '<meta charset="utf-8" /><link href="../Styles/sgc-nav.css" rel="stylesheet" type="text/css"/></head>' \
@@ -70,11 +76,15 @@ def nav_html():
 
 
 def mimetype():
+    """""mimetype default template
+    """
     mime = 'application/epub+zip'
     return mime
 
 
 def nav_css():
+    """""nav.css default template
+    """
     css = 'nav#landmarks {display:none;} ' \
           'nav#page-list {display:none;}' \
           'ol {list-style-type: none;}'

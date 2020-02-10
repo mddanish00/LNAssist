@@ -100,10 +100,10 @@ class LNAssist:
         print_title(text)
 
     def output_epub(self):
-        """"Export into an EPUB file.
+        """"Export chapters and illustrations into an EPUB file.
         """
         self.epub = Epub(self.series + str(self.vol), self.path)
-        self.epub.addall()
+        self.epub.load()
         self.epub.output()
 
     def add(self, url: str, chapter: float = 0, prologue: bool = False, epilogue: bool = False, afterword: bool = False,
