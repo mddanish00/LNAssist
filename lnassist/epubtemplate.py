@@ -1,4 +1,7 @@
+import uuid
+
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 
 def content_opf(full_title='[Main title here]'):
@@ -8,23 +11,27 @@ def content_opf(full_title='[Main title here]'):
 
     package = soup.new_tag('package')
     package['version'] = '3.0'
-    package['unique-identifier'] = 'BookId'
+    package['unique-identifier'] = 'book_id'
     package['xmlns'] = 'http://www.idpf.org/2007/opf'
 
     metadata = soup.new_tag('metadata')
     metadata['xmlns:dc'] = 'http://purl.org/dc/elements/1.1/'
     language = soup.new_tag('dc:language')
     language.append('en')
+    # urn:uuid:5c8a0bb7-bbc9-4273-aa5b-7c586b84bf3e
+    identifier = soup.new_tag('dc:identifier', id='book_id')
+    identifier.append('urn:uuid:' + str(uuid.uuid4()))
     title = soup.new_tag('dc:title')
     title.append(full_title)
     meta_td = soup.new_tag('meta', property='dcterms:modified')
-    meta_td.append('2020-01-15T00:21:15Z')
-    meta_content = soup.new_tag('meta', content='1.0.0')
-    meta_content['name'] = 'Sigil version'
+    date = datetime.now()
+    # 2020-02-11T22:03:36Z
+    date = date.strftime('%Y-%m-%dT%H:%M:%SZ')
+    meta_td.append(date)
     metadata.append(language)
+    metadata.append(identifier)
     metadata.append(title)
     metadata.append(meta_td)
-    metadata.append(meta_content)
     package.append(metadata)
 
     manifest = soup.new_tag('manifest')
