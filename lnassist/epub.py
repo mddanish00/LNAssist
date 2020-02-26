@@ -69,10 +69,12 @@ class Epub:
                 img_path_cont = img_path / img.name
                 self.epub.write(img, img_path_cont, ZIP_DEFLATED)
                 new_m_tag = soup_cont.new_tag("item", id=img.name, href='Images/' + img.name)
-                if img.name.find('png'):
-                    new_m_tag['media-type'] = 'image/png'
-                else:
+                if img.suffix == '.jpg' or img.suffix == '.jpeg':
                     new_m_tag['media-type'] = 'image/jpeg'
+                elif img.suffix == '.png':
+                    new_m_tag['media-type'] = 'image/png'
+                elif img.suffix == '.gif':
+                    new_m_tag['media-type'] = 'image/gif'
                 manifest_tag.append(new_m_tag)
 
         self.epub.writestr('OEBPS/content.opf', soup_cont.prettify(), ZIP_DEFLATED)

@@ -28,10 +28,14 @@ def content_opf(full_title='[Main title here]'):
     # 2020-02-11T22:03:36Z
     date = date.strftime('%Y-%m-%dT%H:%M:%SZ')
     meta_td.append(date)
+    meta_content = soup.new_tag('meta')
+    meta_content['name'] = 'LNAssist'
+    meta_content['content'] = '1.0.9'
     metadata.append(language)
     metadata.append(identifier)
     metadata.append(title)
     metadata.append(meta_td)
+    metadata.append(meta_content)
     package.append(metadata)
 
     manifest = soup.new_tag('manifest')

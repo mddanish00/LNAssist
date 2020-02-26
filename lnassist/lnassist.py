@@ -18,7 +18,8 @@ def is_valid(url):
 def is_image(url):
     """Check if the image url is in known file format
     """
-    if url.find(".png") == url.find(".jpg") == url.find(".gif") == url.find(".jpeg"):
+    url: str
+    if url.endswith(".png") == url.endswith(".jpg") == url.endswith(".gif") == url.endswith(".jpeg"):
         return False
     else:
         return True
@@ -40,6 +41,7 @@ def request_url(url):
         print('- Check your internet connection.')
         print('- Check if your url provided is valid.')
         print('Error: ' + str(e))
+        print('')
         return
 
     return response
@@ -89,17 +91,17 @@ class LNAssist:
         """Set the current series and the current volume numbering.
 
         Arguments:
-        ser -- short name of the series
-        full_ser -- full name of the series
-        vl -- the current vol count
+        short_name -- short name of the series
+        volume -- the current vol count
         """
         self.series: str = short_name.lower()  # convert to lower case
         self.vol: int = volume
+        self.path: Path = Path('files')  # Reset to root folder first
         self.path: Path = self.path / self.series / ('vol' + str(self.vol))
-        text = str(self.series) + ' Volume ' + str(volume)
+        text = str(short_name) + ' Volume ' + str(volume)
         print_title(text)
 
-    def output_epub(self):
+    def out_epub(self):
         """"Export chapters and illustrations into an EPUB file.
         """
         self.epub = Epub(self.series + str(self.vol), self.path)
@@ -142,7 +144,7 @@ class LNAssist:
             return
 
         if len(self.chp_tasks_list) is not 0:
-            for x in tqdm(self.chp_tasks_list, "Executing chapter tasks  ", unit="tsk"):
+            for x in tqdm(self.chp_tasks_list, "Executing chapter tasks  ", unit="tsk", ascii=True):
                 x: Task
                 self.extract_chapter(x.url, x.chapter, x.prologue, x.epilogue, x.afterword, x.extra, x.sidestory,
                                      x.interlude)  # chapter
@@ -270,9 +272,6 @@ class LNAssist:
 
         chapter_path = chapter_path / file_name
         chapter_path.write_text(soup.prettify(), encoding='UTF-8')
-        # file = open(chapter_path, 'w', encoding='UTF-8')
-        # file.write(soup.prettify())
-        # file.close()
 
     def extract_img(self, url):
         """Fetch image links from the given url and download the links.
@@ -286,12 +285,9 @@ class LNAssist:
 
         soup = BeautifulSoup(response.content, "lxml")
         urls = []
-        for img in tqdm(soup.find_all("img"), "Extracting images links  ", unit="img"):
+        for img in tqdm(soup.find_all("img"), "Extracting images links  ", unit="img", ascii=True):
             img_url = img.attrs.get("src")
             if not img_url:
-                continue
-
-            if not is_image(img_url):
                 continue
 
             if not is_absolute(img_url):
@@ -303,10 +299,13 @@ class LNAssist:
             except ValueError:
                 pass
 
+            if not is_image(img_url):
+                continue
+
             if is_valid(img_url):
                 urls.append(img_url)
 
-        for img in tqdm(urls, "Downloading images       ", unit="img"):
+        for img in tqdm(urls, "Downloading images       ", unit="img", ascii=True):
             self.download_img(img)
 
     def download_img(self, url):

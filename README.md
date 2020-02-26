@@ -82,7 +82,7 @@ Available flags: prologue, epilogue, afterword, extra, sidestory, interlude
 
 Only one of the flags can active in one time.
 
-#### Run all tasks
+#### Run all tasks 
 ```
 ln.run()
 ```
@@ -96,7 +96,7 @@ List all the added tasks.
 
 #### Export into an EPUB file
 ```
-ln.output_epub()
+ln.out_epub() 
 ```
 Export all chapters and illustrations in current path into an EPUB file. 
 
